@@ -8,14 +8,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity {
 
     TextView textView;
     SensorManager sensorManager;
 
-    List<Sensor> deviceSensor;
+//    List<Sensor> deviceSensor;
+private Sensor sensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,26 +23,33 @@ public class MainActivity extends AppCompatActivity {
 
         textView = findViewById(R.id.text);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        deviceSensor = sensorManager.getSensorList(Sensor.TYPE_ALL);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        textView.setText(sensor.getPower() + "\n" +
+                sensor.getVersion());
+
+//        deviceSensor = sensorManager.getSensorList(Sensor.TYPE_ALL);
 
 //        textView.setText(deviceSensor.toString());
 
-        printSensor();
+//        printSensor();
 
 //        specificSensor();
     }
 
-    private void specificSensor() {
+    //get specifica Sensor
+   /* private void specificSensor() {
         if (sensorManager.getDefaultSensor(Sensor.TYPE_HEART_BEAT) != null) {
             textView.setText("This device has Sensor");
         } else {
             textView.setText("This device has no Sensor");
         }
-    }
+    }*/
 
-    private void printSensor() {
+    //print sesnsor name
+    /*private void printSensor() {
         for (Sensor sensor : deviceSensor) {
             textView.setText(textView.getText() + "\n" + sensor.getName());
         }
-    }
+    }*/
 }
