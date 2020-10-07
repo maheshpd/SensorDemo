@@ -19,9 +19,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     Boolean isTemperatureSensorAvailable;
     Boolean isHumiditySensorAvailable;
+    Boolean isPressureSensorAvailable;
     //    List<Sensor> deviceSensor;
 //    private Sensor tempSensor;
     private Sensor humiditySesor;
+    private Sensor pressureSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,13 +56,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //        specificSensor();
 
         //Humidity Sensor
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY) != null) {
+        /*if (sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY) != null) {
             humiditySesor = sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
             isHumiditySensorAvailable = true;
         } else {
             textView.setText("Humidity Sensor is not available");
             isHumiditySensorAvailable = false;
+        }*/
+
+        //Pressure Sensor
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null) {
+            pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+            isPressureSensorAvailable = true;
+        } else {
+            isPressureSensorAvailable = false;
+            textView.setText("Pressure Sensor is not Available");
         }
+
     }
 
     @Override
@@ -73,7 +85,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //        textView.setText(sensorEvent.values[0] + " C");
 
         //Humidity Sensor
-        textView.setText(sensorEvent.values[0] + "%");
+//        textView.setText(sensorEvent.values[0] + "%");
+
+        //Pressure Sensor
+        textView.setText(sensorEvent.values[0] + " hPa");
     }
 
     @Override
@@ -94,8 +109,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }*/
 
         //Humidity Sensor
-        if (isHumiditySensorAvailable) {
+        /*if (isHumiditySensorAvailable) {
             sensorManager.registerListener(this, humiditySesor, SensorManager.SENSOR_DELAY_NORMAL);
+        }*/
+
+        //Pressure Sensor
+        if (isPressureSensorAvailable) {
+            sensorManager.registerListener(this, pressureSensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
     }
 
@@ -111,7 +131,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }*/
 
         //Humidity Sensor
-        if (isHumiditySensorAvailable) {
+       /* if (isHumiditySensorAvailable) {
+            sensorManager.unregisterListener(this);
+        }*/
+
+        //Pressure Sensor
+        if (isPressureSensorAvailable) {
             sensorManager.unregisterListener(this);
         }
     }
