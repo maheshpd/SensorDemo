@@ -5,7 +5,10 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,10 +23,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     Boolean isTemperatureSensorAvailable;
     Boolean isHumiditySensorAvailable;
     Boolean isPressureSensorAvailable;
+    Boolean isProximitySensorAvailable;
+
     //    List<Sensor> deviceSensor;
 //    private Sensor tempSensor;
     private Sensor humiditySesor;
     private Sensor pressureSensor;
+    private Sensor proximitySensor;
+    private Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         textView = findViewById(R.id.text);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         //Temperature Sensor implement
         /*if (sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null) {
@@ -65,12 +73,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }*/
 
         //Pressure Sensor
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null) {
+        /*if (sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null) {
             pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
             isPressureSensorAvailable = true;
         } else {
             isPressureSensorAvailable = false;
             textView.setText("Pressure Sensor is not Available");
+        }*/
+
+        //Proximity Sensor
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY) != null) {
+            proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+            isProximitySensorAvailable = true;
+        } else {
+            isProximitySensorAvailable = false;
+            textView.setText("Proximity Sensor is not Available");
         }
 
     }
@@ -88,7 +105,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //        textView.setText(sensorEvent.values[0] + "%");
 
         //Pressure Sensor
-        textView.setText(sensorEvent.values[0] + " hPa");
+//        textView.setText(sensorEvent.values[0] + " hPa");
+
+        //Proximity Sensor
+        textView.setText(sensorEvent.values[0] + "cm");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(500);
+            //deprected in API 26
+        }
     }
 
     @Override
@@ -114,8 +140,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }*/
 
         //Pressure Sensor
-        if (isPressureSensorAvailable) {
+        /*if (isPressureSensorAvailable) {
             sensorManager.registerListener(this, pressureSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }*/
+
+        //Proximity Sensor
+        if (isProximitySensorAvailable) {
+            sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
     }
 
@@ -136,7 +167,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }*/
 
         //Pressure Sensor
-        if (isPressureSensorAvailable) {
+        /*if (isPressureSensorAvailable) {
+            sensorManager.unregisterListener(this);
+        }*/
+
+        //Proximity SEnsor
+        if (isProximitySensorAvailable) {
             sensorManager.unregisterListener(this);
         }
     }
