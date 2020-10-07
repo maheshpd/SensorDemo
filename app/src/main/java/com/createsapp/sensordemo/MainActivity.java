@@ -16,8 +16,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     SensorManager sensorManager;
     float changedValue;
 
+
+    Boolean isTemperatureSensorAvailable;
     //    List<Sensor> deviceSensor;
-    private Sensor sensor;
+    private Sensor tempSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +29,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         textView = findViewById(R.id.text);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
+        //Temperature Sensor implement
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null) {
+            tempSensor = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+            isTemperatureSensorAvailable = true;
+        } else {
+            textView.setText("Temperature Sensor is not available");
+            isTemperatureSensorAvailable = false;
+        }
 
        /* sensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
@@ -45,8 +55,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         //light senssor send only one value
-        changedValue = sensorEvent.values[0];
-        textView.setText(String.valueOf(changedValue));
+       /* changedValue = sensorEvent.values[0];
+        textView.setText(String.valueOf(changedValue));*/
+
+        textView.setText(sensorEvent.values[0] + " C");
     }
 
     @Override
@@ -58,13 +70,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT), SensorManager.SENSOR_DELAY_NORMAL);
+        //Light Sensor
+//        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT), SensorManager.SENSOR_DELAY_NORMAL);
+
+        //Temperature Sensor
+        if (isTemperatureSensorAvailable) {
+            sensorManager.registerListener(this, tempSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        sensorManager.unregisterListener(this);
+        //Light Sensor
+//        sensorManager.unregisterListener(this);
+
+        //Temperature Sensor
+        if (isTemperatureSensorAvailable) {
+            sensorManager.unregisterListener(this);
+        }
     }
     //get specifica Sensor
    /* private void specificSensor() {
