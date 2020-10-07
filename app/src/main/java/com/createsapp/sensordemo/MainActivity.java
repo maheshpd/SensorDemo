@@ -2,19 +2,22 @@ package com.createsapp.sensordemo;
 
 import android.content.Context;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     TextView textView;
     SensorManager sensorManager;
+    float changedValue;
 
-//    List<Sensor> deviceSensor;
-private Sensor sensor;
+    //    List<Sensor> deviceSensor;
+    private Sensor sensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,10 +26,12 @@ private Sensor sensor;
 
         textView = findViewById(R.id.text);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+
+       /* sensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
         textView.setText(sensor.getPower() + "\n" +
-                sensor.getVersion());
+                sensor.getVersion());*/
 
 //        deviceSensor = sensorManager.getSensorList(Sensor.TYPE_ALL);
 
@@ -37,6 +42,30 @@ private Sensor sensor;
 //        specificSensor();
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        //light senssor send only one value
+        changedValue = sensorEvent.values[0];
+        textView.setText(String.valueOf(changedValue));
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT), SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+    }
     //get specifica Sensor
    /* private void specificSensor() {
         if (sensorManager.getDefaultSensor(Sensor.TYPE_HEART_BEAT) != null) {
