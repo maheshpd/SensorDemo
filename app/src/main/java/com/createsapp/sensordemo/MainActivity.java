@@ -18,8 +18,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
     Boolean isTemperatureSensorAvailable;
+    Boolean isHumiditySensorAvailable;
     //    List<Sensor> deviceSensor;
-    private Sensor tempSensor;
+//    private Sensor tempSensor;
+    private Sensor humiditySesor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,13 +32,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         //Temperature Sensor implement
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null) {
+        /*if (sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null) {
             tempSensor = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
             isTemperatureSensorAvailable = true;
         } else {
             textView.setText("Temperature Sensor is not available");
             isTemperatureSensorAvailable = false;
-        }
+        }*/
 
        /* sensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
@@ -50,6 +52,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //        printSensor();
 
 //        specificSensor();
+
+        //Humidity Sensor
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY) != null) {
+            humiditySesor = sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+            isHumiditySensorAvailable = true;
+        } else {
+            textView.setText("Humidity Sensor is not available");
+            isHumiditySensorAvailable = false;
+        }
     }
 
     @Override
@@ -58,7 +69,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
        /* changedValue = sensorEvent.values[0];
         textView.setText(String.valueOf(changedValue));*/
 
-        textView.setText(sensorEvent.values[0] + " C");
+        //Temperature Sensor
+//        textView.setText(sensorEvent.values[0] + " C");
+
+        //Humidity Sensor
+        textView.setText(sensorEvent.values[0] + "%");
     }
 
     @Override
@@ -74,10 +89,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT), SensorManager.SENSOR_DELAY_NORMAL);
 
         //Temperature Sensor
-        if (isTemperatureSensorAvailable) {
+        /*if (isTemperatureSensorAvailable) {
             sensorManager.registerListener(this, tempSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        }
+        }*/
 
+        //Humidity Sensor
+        if (isHumiditySensorAvailable) {
+            sensorManager.registerListener(this, humiditySesor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
     }
 
     @Override
@@ -87,7 +106,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //        sensorManager.unregisterListener(this);
 
         //Temperature Sensor
-        if (isTemperatureSensorAvailable) {
+        /*if (isTemperatureSensorAvailable) {
+            sensorManager.unregisterListener(this);
+        }*/
+
+        //Humidity Sensor
+        if (isHumiditySensorAvailable) {
             sensorManager.unregisterListener(this);
         }
     }
