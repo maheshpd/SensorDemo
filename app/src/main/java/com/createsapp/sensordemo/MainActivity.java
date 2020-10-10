@@ -15,21 +15,27 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
-    TextView textView;
+    TextView xtext, ytext, ztext;
     SensorManager sensorManager;
     float changedValue;
+    Boolean isAccelerometerSensorAvailable, itIsNotFirstTime = false;
+    private float currentX, currentY, currentZ, lastX, lastY, lastZ;
+    private float xDifference, yDifference, zDifference;
 
 
     Boolean isTemperatureSensorAvailable;
     Boolean isHumiditySensorAvailable;
     Boolean isPressureSensorAvailable;
     Boolean isProximitySensorAvailable;
+    private float shakeThreshold = 5f;
+
 
     //    List<Sensor> deviceSensor;
 //    private Sensor tempSensor;
     private Sensor humiditySesor;
     private Sensor pressureSensor;
     private Sensor proximitySensor;
+    private Sensor accekerometerSensor;
     private Vibrator vibrator;
 
     @Override
@@ -37,7 +43,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        textView = findViewById(R.id.text);
+        xtext = findViewById(R.id.xtext);
+        ytext = findViewById(R.id.ytext);
+        ztext = findViewById(R.id.ztext);
+
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -82,12 +91,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }*/
 
         //Proximity Sensor
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY) != null) {
+       /* if (sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY) != null) {
             proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
             isProximitySensorAvailable = true;
         } else {
             isProximitySensorAvailable = false;
             textView.setText("Proximity Sensor is not Available");
+        }*/
+
+        //Shake Detection Sensor
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
+            accekerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            isAccelerometerSensorAvailable = true;
+        } else {
+            xtext.setText("Accelerometer sensor is not available");
+            isAccelerometerSensorAvailable = false;
         }
 
     }
@@ -108,13 +126,44 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //        textView.setText(sensorEvent.values[0] + " hPa");
 
         //Proximity Sensor
-        textView.setText(sensorEvent.values[0] + "cm");
+        /*textView.setText(sensorEvent.values[0] + "cm");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
             vibrator.vibrate(500);
             //deprected in API 26
+        }*/
+
+        //AccelerometerSensor
+        xtext.setText(sensorEvent.values[0] + "m/s2");
+        ytext.setText(sensorEvent.values[1] + "m/s2");
+        ztext.setText(sensorEvent.values[2] + "m/s2");
+
+        currentX = sensorEvent.values[0];
+        currentY = sensorEvent.values[1];
+        currentZ = sensorEvent.values[2];
+
+        if (itIsNotFirstTime) {
+            xDifference = Math.abs(lastX - currentX);
+            yDifference = Math.abs(lastY - currentY);
+            zDifference = Math.abs(lastZ - currentZ);
+
+            if ((xDifference > shakeThreshold && yDifference > shakeThreshold) ||
+                    (xDifference > shakeThreshold && zDifference > shakeThreshold) ||
+                    (yDifference > shakeThreshold && zDifference > shakeThreshold)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                } else {
+                    vibrator.vibrate(500);
+                    //deprected in API 26
+                }
+            }
         }
+
+        lastX = currentX;
+        lastY = currentY;
+        lastZ = currentZ;
+        itIsNotFirstTime = true;
     }
 
     @Override
@@ -145,8 +194,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }*/
 
         //Proximity Sensor
-        if (isProximitySensorAvailable) {
+        /*if (isProximitySensorAvailable) {
             sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }*/
+
+        //Accelerometer Sensor
+
+        if (isAccelerometerSensorAvailable) {
+            sensorManager.registerListener(this, accekerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
     }
 
@@ -172,9 +227,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }*/
 
         //Proximity SEnsor
-        if (isProximitySensorAvailable) {
+        /*if (isProximitySensorAvailable) {
+            sensorManager.unregisterListener(this);
+        }*/
+
+        //Accelometer Sensor
+        if (isAccelerometerSensorAvailable) {
             sensorManager.unregisterListener(this);
         }
+
     }
     //get specifica Sensor
    /* private void specificSensor() {

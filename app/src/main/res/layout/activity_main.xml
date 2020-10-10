@@ -7,14 +7,37 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/text"
+        android:id="@+id/xtext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:layout_marginTop="264dp"
+        android:text="X Value"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/ytext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:text="Y Value"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/xtext"
+        app:layout_constraintStart_toStartOf="@+id/xtext"
+        app:layout_constraintTop_toBottomOf="@+id/xtext" />
+
+    <TextView
+        android:id="@+id/ztext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Z Value"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="@+id/ytext"
+        app:layout_constraintStart_toStartOf="@+id/ytext"
+        app:layout_constraintTop_toBottomOf="@+id/ytext"
+        app:layout_constraintVertical_bias="0.11" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
