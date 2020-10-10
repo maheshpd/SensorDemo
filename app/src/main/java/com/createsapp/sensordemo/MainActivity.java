@@ -9,13 +9,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
-    TextView xtext, ytext, ztext;
+    TextView xtext, ytext, ztext, stepCounter, stepDetector;
     SensorManager sensorManager;
     float changedValue;
     Boolean isAccelerometerSensorAvailable, itIsNotFirstTime = false;
@@ -27,7 +28,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     Boolean isHumiditySensorAvailable;
     Boolean isPressureSensorAvailable;
     Boolean isProximitySensorAvailable;
+    Boolean isCounterSensorPresent;
     private float shakeThreshold = 5f;
+    private int stepCount = 0;
 
 
     //    List<Sensor> deviceSensor;
@@ -36,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor pressureSensor;
     private Sensor proximitySensor;
     private Sensor accekerometerSensor;
+    private Sensor mstepCounter;
     private Vibrator vibrator;
 
     @Override
@@ -43,12 +47,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         xtext = findViewById(R.id.xtext);
         ytext = findViewById(R.id.ytext);
         ztext = findViewById(R.id.ztext);
+        stepCounter = findViewById(R.id.stepCounter);
+        stepDetector = findViewById(R.id.stepDetector);
+
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null) {
+            mstepCounter = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+            isCounterSensorPresent = true;
+        } else {
+            stepCounter.setText("Counter Sensor is not Present");
+            isCounterSensorPresent = false;
+        }
 
         //Temperature Sensor implement
         /*if (sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null) {
@@ -164,6 +181,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         lastY = currentY;
         lastZ = currentZ;
         itIsNotFirstTime = true;
+
+        //Step Count
+        if (sensorEvent.sensor == mstepCounter) {
+            stepCount = (int) sensorEvent.values[0];
+            stepCounter.setText(String.valueOf(stepCount));
+        }
     }
 
     @Override
@@ -199,10 +222,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }*/
 
         //Accelerometer Sensor
-
         if (isAccelerometerSensorAvailable) {
             sensorManager.registerListener(this, accekerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
+
+        //Step Counter
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null)
+            sensorManager.registerListener(this, mstepCounter, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -235,6 +261,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (isAccelerometerSensorAvailable) {
             sensorManager.unregisterListener(this);
         }
+
+        //Step Counter
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null)
+            sensorManager.unregisterListener(this, mstepCounter);
 
     }
     //get specifica Sensor
